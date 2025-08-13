@@ -1,0 +1,33 @@
+[2025-08-11 03:28:53] Ejecución `ansible-playbook -i inventory.ini hardening.yml --limit ubuntu --become`
+
+PLAY [Hardening Ubuntu 24.04] ****************************************************
+
+TASK [Actualizar índices y paquetes] *********************************************
+changed: [ubuntu1]
+
+TASK [Instalar ufw y fail2ban] ***************************************************
+changed: [ubuntu1]
+
+TASK [Configurar UFW - denegar entrantes] ****************************************
+changed: [ubuntu1]
+
+TASK [Permitir SSH por UFW] ******************************************************
+changed: [ubuntu1]
+
+TASK [Configurar SSH - sin root y sin passwords, solo claves] ********************
+changed: [ubuntu1]
+
+TASK [Configurar fail2ban para sshd] *********************************************
+changed: [ubuntu1]
+
+TASK [Asegurar fail2ban habilitado y activo] *************************************
+ok: [ubuntu1]
+
+TASK [Determinar si el sistema requiere reinicio] ********************************
+ok: [ubuntu1]
+
+RUNNING HANDLER [Reiniciar ssh] **************************************************
+changed: [ubuntu1]
+
+PLAY RECAP ***********************************************************************
+ubuntu1 : ok=9  changed=7  unreachable=0  failed=0  skipped=0  rescued=0  ignored=0

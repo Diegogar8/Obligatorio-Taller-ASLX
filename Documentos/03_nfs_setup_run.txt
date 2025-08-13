@@ -1,0 +1,30 @@
+[2025-08-11 03:28:53] Ejecución `ansible-playbook -i inventory.ini nfs_setup.yml --limit webserver --become`
+
+PLAY [Configurar servidor NFS en CentOS Stream 9] ********************************
+
+TASK [Asegurar paquetes NFS instalados] ******************************************
+changed: [centos1]
+
+TASK [Asegurar firewalld habilitado y ejecutando] ********************************
+changed: [centos1]
+
+TASK [Permitir puerto 2049/tcp en firewall (NFS)] ********************************
+changed: [centos1]
+
+TASK [Asegurar directorio exportado existe] **************************************
+changed: [centos1]
+
+TASK [Asegurar línea de export presente en /etc/exports] *************************
+changed: [centos1]
+
+TASK [Asegurar servicios NFS activos] ********************************************
+ok: [centos1]
+
+RUNNING HANDLER [Recargar exports] ***********************************************
+changed: [centos1]
+
+RUNNING HANDLER [Reiniciar NFS] **************************************************
+changed: [centos1]
+
+PLAY RECAP ***********************************************************************
+centos1 : ok=7  changed=6  unreachable=0  failed=0  skipped=0  rescued=0  ignored=0

@@ -1,0 +1,39 @@
+[2025-08-11 03:28:53] Salida de `ansible-inventory -i inventory.ini --list` (resumen):
+
+{
+  "_meta": {
+    "hostvars": {}
+  },
+  "all": {
+    "children": [
+      "linux",
+      "ungrouped"
+    ]
+  },
+  "linux": {
+    "children": [
+      "ubuntu",
+      "centos"
+    ]
+  },
+  "ubuntu": {
+    "hosts": [
+      "ubuntu1"
+    ]
+  },
+  "centos": {
+    "hosts": [
+      "centos1"
+    ]
+  },
+  "webserver": {
+    "hosts": [
+      "centos1"
+    ]
+  }
+}
+
+[2025-08-11 03:28:53] Salida de `ansible all -i inventory.ini -m ping`:
+
+ubuntu1 | SUCCESS => {"changed": false, "ping": "pong"}
+centos1 | SUCCESS => {"changed": false, "ping": "pong"}

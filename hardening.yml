@@ -1,0 +1,90 @@
+---
+- name: Hardening Ubuntu 24.04
+  hosts: ubuntu
+  become: true
+  gather_facts: true
+
+  handlers:
+    - name: Reiniciar ssh
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+
+    - name: Reboot si requerido
+      ansible.builtin.reboot:
+        msg: "Reinicio automático por actualizaciones del sistema"
+        reboot_timeout: 600
+
+  tasks:
+    - name: Actualizar índices y paquetes
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+      register: apt_upgrade
+      notify: Reboot si requerido
+
+    - name: Instalar ufw y fail2ban
+      ansible.builtin.apt:
+        name:
+          - ufw
+          - fail2ban
+        state: present
+
+    - name: Configurar UFW - denegar entrantes
+      community.general.ufw:
+        state: enabled
+        default: deny
+        direction: incoming
+
+    - name: Permitir SSH por UFW
+      community.general.ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: Configurar SSH - sin root y sin passwords, solo claves
+      ansible.builtin.copy:
+        dest: /etc/ssh/sshd_config.d/99-hardening.conf
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          # Endurecimiento SSH
+          PasswordAuthentication no
+          ChallengeResponseAuthentication no
+          KbdInteractiveAuthentication no
+          PubkeyAuthentication yes
+          PermitRootLogin no
+      notify: Reiniciar ssh
+
+    - name: Configurar fail2ban para sshd
+      ansible.builtin.copy:
+        dest: /etc/fail2ban/jail.d/sshd-hardening.local
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          [sshd]
+          enabled = true
+          port    = ssh
+          filter  = sshd
+          logpath = /var/log/auth.log
+          maxretry = 5
+          bantime = 600
+      notify: 
+        - Reiniciar ssh
+
+    - name: Asegurar fail2ban habilitado y activo
+      ansible.builtin.service:
+        name: fail2ban
+        state: started
+        enabled: true
+
+    - name: Determinar si el sistema requiere reinicio
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+      register: reboot_required_flag
+      when: apt_upgrade is changed
+
+    - name: Disparar handler de reboot si el sistema lo requiere
+      ansible.builtin.meta: flush_handlers
+      when: reboot_required_flag.stat.exists | default(false)

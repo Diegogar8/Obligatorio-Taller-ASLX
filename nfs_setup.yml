@@ -1,0 +1,61 @@
+---
+- name: Configurar servidor NFS en CentOS Stream 9
+  hosts: webserver
+  become: true
+  gather_facts: true
+
+  vars:
+    nfs_export_dir: /var/nfs_shared
+    nfs_exports_line: "/var/nfs_shared *(rw,sync,no_subtree_check,no_root_squash)"
+
+  tasks:
+    - name: Asegurar paquetes NFS instalados
+      ansible.builtin.dnf:
+        name:
+          - nfs-utils
+          - firewalld
+        state: present
+
+    - name: Asegurar firewalld habilitado y ejecutando
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: Permitir puerto 2049/tcp en firewall (NFS)
+      ansible.posix.firewalld:
+        port: 2049/tcp
+        permanent: true
+        state: enabled
+        immediate: true
+
+    - name: Asegurar directorio exportado existe
+      ansible.builtin.file:
+        path: "{{ nfs_export_dir }}"
+        state: directory
+        owner: nobody
+        group: nobody
+        mode: '0777'
+
+    - name: Asegurar línea de export presente en /etc/exports
+      ansible.builtin.lineinfile:
+        path: /etc/exports
+        line: "{{ nfs_exports_line }}"
+        create: true
+      notify: Recargar exports
+
+    - name: Asegurar servicios NFS activos
+      ansible.builtin.service:
+        name: nfs-server
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Recargar exports
+      ansible.builtin.command: exportfs -ra
+      notify: Reiniciar NFS
+
+    - name: Reiniciar NFS
+      ansible.builtin.service:
+        name: nfs-server
+        state: restarted

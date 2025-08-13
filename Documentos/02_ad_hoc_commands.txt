@@ -1,0 +1,30 @@
+[2025-08-11 03:28:53] Comandos ad-hoc ejecutados
+
+1) Listar usuarios en Ubuntu:
+   ansible ubuntu -i inventory.ini -a 'cut -d: -f1 /etc/passwd'
+   Ejemplo de salida (resumen):
+   ubuntu1 | CHANGED | rc=0 > root
+   daemon
+   bin
+   sys
+   ...
+   ubuntu
+
+2) Mostrar uso de memoria en todos los servidores:
+   ansible all -i inventory.ini -a 'free -h'
+   Ejemplo de salida (resumen):
+   centos1 | CHANGED | rc=0 >
+               total        used        free      shared  buff/cache   available
+   Mem:           1.9G        300M        1.1G         10M        500M        1.5G
+   Swap:            4G          0B          4G
+
+   ubuntu1 | CHANGED | rc=0 >
+               total        used        free      shared  buff/cache   available
+   Mem:           1.9G        280M        1.2G         10M        450M        1.6G
+   Swap:            4G          0B          4G
+
+3) Asegurar chrony instalado y activo en CentOS:
+   ansible centos -i inventory.ini -m dnf -a 'name=chrony state=present' --become
+   ansible centos -i inventory.ini -m service -a 'name=chronyd state=started enabled=true' --become
+   Verificación:
+   ansible centos -i inventory.ini -a 'systemctl status chronyd --no-pager' --become
