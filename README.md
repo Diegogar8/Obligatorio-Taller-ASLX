@@ -78,13 +78,13 @@ ansible all -i inventory.ini -m ping
 ### 1) NFS en CentOS (grupo `webserver` o `centos`)
 
 ```bash
-ansible-playbook -i inventory.ini nfs_setup.yml --limit webserver --become
+ansible-playbook -i inventory.ini nfs_setup.yml --limit webserver --K
 ```
 
 ### 2) Hardening en Ubuntu (grupo `ubuntu`)
 
 ```bash
-ansible-playbook -i inventory.ini hardening.yml --limit ubuntu --become
+ansible-playbook -i inventory.ini hardening.yml --limit ubuntu --K
 ```
 
 > **Handlers**:  
