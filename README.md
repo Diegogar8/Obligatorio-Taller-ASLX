@@ -4,7 +4,6 @@ Este repositorio contiene la solución completa al obligatorio del Taller Servid
 Incluye inventario, playbooks, evidencias y respuestas teóricas.
 
 
-> **Nota**: Ajustá las IPs y el usuario en `inventory.ini` según tu entorno. Probado con **CentOS Stream 9** y **Ubuntu 24.04 LTS**.
 
 ---
 
@@ -28,9 +27,40 @@ Incluye inventario, playbooks, evidencias y respuestas teóricas.
 
 ## Requisitos previos
 
-- Control node con **Ansible 2.16+**.
+- Instalación de Ansible en bastion: 
+```bash
+sudo dnf install ansible-core
+```
+- Instalación de Python en equipos hosts:
+```bash
+#Para CentOS
+sudo dnf install python3
+#Para Ubuntu
+sudo apt install python3
+```
+- Instalación de Git en bastion: 
+```bash
+sudo dnf install git
+```
+- Instalación de SSH en Ubuntu: 
+```bash
+sudo apt install openssh
+```
+- Configurar firewall con el puerto 22 para conexión SSH
+- Instalación de Ansible Posix en bastion: 
+```bash
+sudo ansible-galaxy collection ansible.posix 
+```
+- Instalación de Ansible community general en bastion:
+```bash
+sudo ansible-galaxy collection community.general
+```
 - Acceso SSH por clave a los hosts.
-- Usuario remoto (por defecto `ansible`) con permisos de sudo sin contraseña (o usá `--ask-become-pass`).
+- Visudo en equipos host Ubuntu1 y Centos1: 
+```bash
+sudo visudo 
+```
+ **Contenido** syadmmin ALL=(ALL:ALL) ALL
 
 ---
 
